@@ -1,4 +1,4 @@
-# 부모 테이블 정의
+# 부모 테이블
 
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship

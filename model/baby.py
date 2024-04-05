@@ -1,6 +1,6 @@
-# 아기 테이블 정의
+# 아기 테이블
 
-from sqlalchemy import Column,String, ForeignKey, DateTime
+from sqlalchemy import Column,String, DateTime
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from datetime import datetime
@@ -52,13 +52,11 @@ class Baby(BaseModel):
 
 class BabyTable(DB_Base):
     __tablename__ = 'baby'
-    id = Column(String(36), primary_key=True, default=uuid.uuid4)
-    parentId = Column(String(36), ForeignKey(
-        'parent.uid', ondelete='SET NULL'))
+    baby_id = Column(String(255), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), nullable=False, index=True)
     gender = Column(String(50), nullable=False)
     birthDate = Column(DateTime, nullable=False)
-    bloodType = Column(String(50), nullable=False)
+    bloodType = Column(String(3), nullable=False)
     photoId = Column(String(255), nullable=True)
 
     # Relationships

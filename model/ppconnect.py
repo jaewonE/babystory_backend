@@ -1,4 +1,4 @@
-# 유저간의 연결 테이블 정의
+# 유저간의 연결 테이블
 
 from sqlalchemy import Column,String, ForeignKey
 from sqlalchemy.orm import relationship
