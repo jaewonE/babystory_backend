@@ -30,6 +30,9 @@ class PBconnect(BaseModel):
     parent_id: str
     baby_id: str
 
+    def __hash__(self):
+        return hash((type(self),) + tuple(self.__dict__.values()))
+
     class Config:
         orm_mode = True
         use_enum_values = True

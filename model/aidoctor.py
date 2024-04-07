@@ -1,34 +1,37 @@
-# 게시물 공유 테이블
-
+# AI 의사 테이블
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from db import DB_Base
-import uuid
 
-from model.post import Post
 from model.parent import Parent
 
 # +-----------+--------------+------+-----+---------+----------------+
 # | Field     | Type         | Null | Key | Default | Extra          |
 # +-----------+--------------+------+-----+---------+----------------+
-# | share_id  | int(11)      | NO   | PRI | NULL    | auto_increment |
-# | post_id   | int(11)      | NO   | MUL | NULL    |                |
+# | id        | int(11)      | NO   | PRI | NULL    | auto_increment |
 # | parent_id | varchar(255) | NO   | MUL | NULL    |                |
+# | ask_id    | varchar(100) | YES  |     | NULL    |                |
+# | res_id    | varchar(100) | YES  |     | NULL    |                |
+# | haddr     | varchar(255) | YES  |     | NULL    |                |
 # +-----------+--------------+------+-----+---------+----------------+
-# CREATE TABLE share (
-#     share_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-#     post_id INT NOT NULL,
+# CREATE TABLE aidoctor (
+#     id INT PRIMARY KEY auto_increment NOT NULL,
 #     parent_id VARCHAR(255) NOT NULL,
-#     FOREIGN KEY (post_id) REFERENCES post(post_id),
-#     FOREIGN KEY (parent_id) REFERENCES parent(parent_id)
+#     ask_id VARCHAR(100),
+#     res_id VARCHAR(100),
+#     haddr VARCHAR(255)
 # );
+# ALTER TABLE aidoctor
+#     ADD CONSTRAINT fk_parent_id FOREIGN KEY (parent_id) REFERENCES parent(parent_id);
 
-class Share(BaseModel):
-    share_id: int
-    post_id: int
+class AIDoctor(BaseModel):
+    id: int
     parent_id: str
-    
+    ask_id: str
+    res_id: str
+    haddr: str
+
     def __hash__(self):
         return hash((type(self),) + tuple(self.__dict__.values()))
 
@@ -41,12 +44,13 @@ class Share(BaseModel):
             kwargs.pop('_sa_instance_state')
         super().__init__(**kwargs)
 
-class ShareTable(DB_Base):
-    __tablename__ = 'share'
+class AIDoctorTable(DB_Base):
+    __tablename__ = 'aidoctor'
 
-    share_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    post_id = Column(Integer, ForeignKey('post.post_id'))
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     parent_id = Column(String(255), ForeignKey('parent.parent_id'))
+    ask_id = Column(String(100))
+    res_id = Column(String(100))
+    haddr = Column(String(255))
 
-    post = relationship(Post, backref='share', passive_deletes=True)
-    parent = relationship(Parent, backref='share', passive_deletes=True)
+    parent = relationship(Parent, back_populates='aidoctor', passive_deletes=True)

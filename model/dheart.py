@@ -1,34 +1,34 @@
-# 게시물 공유 테이블
+# 중고거래 위시리스트 테이블
 
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column,String, ForeignKey, Integer, Float, DateTime
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from db import DB_Base
+from datetime import datetime
 import uuid
 
-from model.post import Post
+from model.deal import Deal
 from model.parent import Parent
-
 # +-----------+--------------+------+-----+---------+----------------+
 # | Field     | Type         | Null | Key | Default | Extra          |
 # +-----------+--------------+------+-----+---------+----------------+
-# | share_id  | int(11)      | NO   | PRI | NULL    | auto_increment |
-# | post_id   | int(11)      | NO   | MUL | NULL    |                |
+# | dheart_id | int(11)      | NO   | PRI | NULL    | auto_increment |
+# | deal_id   | int(11)      | NO   | MUL | NULL    |                |
 # | parent_id | varchar(255) | NO   | MUL | NULL    |                |
 # +-----------+--------------+------+-----+---------+----------------+
-# CREATE TABLE share (
-#     share_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-#     post_id INT NOT NULL,
+# CREATE TABLE dheart (
+#     dheart_id INT PRIMARY KEY auto_increment NOT NULL,
+#     deal_id INT NOT NULL,
 #     parent_id VARCHAR(255) NOT NULL,
-#     FOREIGN KEY (post_id) REFERENCES post(post_id),
+#     FOREIGN KEY (deal_id) REFERENCES deal(deal_id),
 #     FOREIGN KEY (parent_id) REFERENCES parent(parent_id)
 # );
 
-class Share(BaseModel):
-    share_id: int
-    post_id: int
+class Dheart(BaseModel):
+    dheart_id: int
+    deal_id: int
     parent_id: str
-    
+
     def __hash__(self):
         return hash((type(self),) + tuple(self.__dict__.values()))
 
@@ -41,12 +41,12 @@ class Share(BaseModel):
             kwargs.pop('_sa_instance_state')
         super().__init__(**kwargs)
 
-class ShareTable(DB_Base):
-    __tablename__ = 'share'
+class DheartTable(DB_Base):
+    __tablename__ = 'dheart'
 
-    share_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    post_id = Column(Integer, ForeignKey('post.post_id'))
+    dheart_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    deal_id = Column(Integer, ForeignKey('deal.deal_id'))
     parent_id = Column(String(255), ForeignKey('parent.parent_id'))
 
-    post = relationship(Post, backref='share', passive_deletes=True)
-    parent = relationship(Parent, backref='share', passive_deletes=True)
+    deal = relationship(Deal, back_populates='dheart', passive_deletes=True)
+    parent = relationship(Parent, back_populates='dheart', passive_deletes=True)

@@ -33,6 +33,9 @@ class PCConnect(BaseModel):
     parent_id: str
     room_id: int
 
+    def __hash__(self):
+        return hash((type(self),) + tuple(self.__dict__.values()))
+
     class Config:
         orm_mode = True
         use_enum_values = True

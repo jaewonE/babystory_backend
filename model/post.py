@@ -1,8 +1,10 @@
 # 게시물 테이블
-from sqlalchemy import Column, Integer, String, ForeignKey
+
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from db import DB_Base
+from datetime import datetime
 import uuid
 
 from model.parent import Parent
@@ -45,14 +47,17 @@ class Post(BaseModel):
     parent_id: str
     post: str
     photos: str
-    post_time: str
-    modify_time: str
-    delete_time: str
+    post_time: datetime
+    modify_time: datetime
+    delete_time: datetime
     heart: int
     share: int
     script: int
     comment: int
     hash: str
+
+    def __hash__(self):
+        return hash((type(self),) + tuple(self.__dict__.values()))
 
     class Config:
         orm_mode = True
@@ -70,9 +75,9 @@ class PostTable(DB_Base):
     parent_id = Column(String(255), ForeignKey('parent.parent_id'))
     post = Column(String(255), nullable=False)
     photos = Column(String(255))
-    post_time = Column(String(255), nullable=False)
-    modify_time = Column(String(255))
-    delete_time = Column(String(255))
+    post_time = Column(DateTime, nullable=False)
+    modify_time = Column(DateTime)
+    delete_time = Column(DateTime)
     heart = Column(Integer)
     share = Column(Integer)
     script = Column(Integer)
@@ -80,4 +85,3 @@ class PostTable(DB_Base):
     hash = Column(String(100))
 
     parent = relationship(Parent, backref='post', passive_deletes=True)
-    # 댓글 정보 추가

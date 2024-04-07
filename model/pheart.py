@@ -1,4 +1,5 @@
 # 게시물 하트 테이블
+
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
@@ -28,6 +29,9 @@ class PHeart(BaseModel):
     post_id: int
     parent_id: str
 
+    def __hash__(self):
+        return hash((type(self),) + tuple(self.__dict__.values()))
+
     class Config:
         orm_mode = True
         use_enum_values = True
@@ -44,6 +48,5 @@ class PHeartTable(DB_Base):
     post_id = Column(Integer, ForeignKey('post.post_id'))
     parent_id = Column(String(255), ForeignKey('parent.parent_id'))
 
-    post = relationship('Post', backref='pheart', passive_deletes=True)
-    parent = relationship('Parent', backref='pheart', passive_deletes=True)
-    # 게시물 정보 추가
+    post = relationship(Post, backref='pheart', passive_deletes=True)
+    parent = relationship(Parent, backref='pheart', passive_deletes=True)

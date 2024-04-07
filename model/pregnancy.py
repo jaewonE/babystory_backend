@@ -1,34 +1,35 @@
-# 게시물 공유 테이블
-
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from db import DB_Base
 import uuid
 
-from model.post import Post
 from model.parent import Parent
+from model.baby import Baby
 
 # +-----------+--------------+------+-----+---------+----------------+
 # | Field     | Type         | Null | Key | Default | Extra          |
 # +-----------+--------------+------+-----+---------+----------------+
-# | share_id  | int(11)      | NO   | PRI | NULL    | auto_increment |
-# | post_id   | int(11)      | NO   | MUL | NULL    |                |
+# | pregn_id  | int(11)      | NO   | PRI | NULL    | auto_increment |
 # | parent_id | varchar(255) | NO   | MUL | NULL    |                |
+# | baby_id   | varchar(255) | NO   | MUL | NULL    |                |
+# | dname     | varchar(50)  | YES  |     | NULL    |                |
 # +-----------+--------------+------+-----+---------+----------------+
-# CREATE TABLE share (
-#     share_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-#     post_id INT NOT NULL,
+# CREATE TABLE pregnancy (
+#     pregn_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 #     parent_id VARCHAR(255) NOT NULL,
-#     FOREIGN KEY (post_id) REFERENCES post(post_id),
-#     FOREIGN KEY (parent_id) REFERENCES parent(parent_id)
+#     baby_id VARCHAR(255) NOT NULL,
+#     dname VARCHAR(50),
+#     FOREIGN KEY (parent_id) REFERENCES parent(parent_id),
+#     FOREIGN KEY (baby_id) REFERENCES baby(baby_id)
 # );
 
-class Share(BaseModel):
-    share_id: int
-    post_id: int
+class Pregnancy(BaseModel):
+    pregn_id: int
     parent_id: str
-    
+    baby_id: str
+    dname: str
+
     def __hash__(self):
         return hash((type(self),) + tuple(self.__dict__.values()))
 
@@ -41,12 +42,13 @@ class Share(BaseModel):
             kwargs.pop('_sa_instance_state')
         super().__init__(**kwargs)
 
-class ShareTable(DB_Base):
-    __tablename__ = 'share'
+class PregnancyTable(DB_Base):
+    __tablename__ = 'pregnancy'
 
-    share_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    post_id = Column(Integer, ForeignKey('post.post_id'))
+    pregn_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     parent_id = Column(String(255), ForeignKey('parent.parent_id'))
+    baby_id = Column(String(255), ForeignKey('baby.baby_id'))
+    dname = Column(String(50))
 
-    post = relationship(Post, backref='share', passive_deletes=True)
-    parent = relationship(Parent, backref='share', passive_deletes=True)
+    parent = relationship(Parent, back_populates='pregnancy', passive_deletes=True)
+    baby = relationship(Baby, back_populates='pregnancy', passive_deletes=True)
