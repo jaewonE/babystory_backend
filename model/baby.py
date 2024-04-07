@@ -31,12 +31,12 @@ from model.cry_state import CryState
 # );
 
 class Baby(BaseModel):
-    baby_id = str
-    name = str
-    gender = str
-    birthDate = datetime
-    bloodType = str
-    photoId = str
+    baby_id: str
+    name: str
+    gender: str
+    birthDate: datetime
+    bloodType: str
+    photoId: str
 
     def __hash__(self):
         return hash((type(self),) + tuple(self.__dict__.values()))
